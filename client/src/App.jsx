@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-const FEED_URL = 'http://localhost:9000/.netlify/functions/api/feed'
+const FEED_URL = 'https://podcast-rss-feed.netlify.app/.netlify/functions/api/feed'
 
 const App = () => {
     const itemRef = useRef()

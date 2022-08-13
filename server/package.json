@@ -3,16 +3,15 @@
     "version": "1.0.0",
     "main": "index.js",
     "license": "MIT",
-    "type": "module",
     "scripts": {
-        "dev": "nodemon server.js"
+        "dev": "./node_modules/.bin/netlify-lambda serve src",
+        "build": "./node_modules/.bin/netlify-lambda build src"
     },
     "dependencies": {
         "cors": "^2.8.5",
         "express": "^4.18.1",
-        "rss-parser": "^3.12.0"
-    },
-    "devDependencies": {
-        "nodemon": "^2.0.19"
+        "netlify-lambda": "^2.0.15",
+        "rss-parser": "^3.12.0",
+        "serverless-http": "^3.0.2"
     }
 }

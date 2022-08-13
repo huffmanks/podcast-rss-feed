@@ -1,11 +1,41 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-const FEED_URL = 'http://localhost:5000/feed'
+const FEED_URL = 'http://localhost:9000/.netlify/functions/api/feed'
 
 const App = () => {
+    const itemRef = useRef()
+
     const [data, setData] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+
+    const [id, setId] = useState(null)
+
+    const handleListen = (itemId) => {
+        setId(itemId)
+    }
+
+    const formatDuration = (text) => {
+        const textArr = text.split(':')
+
+        const hour = textArr[0] === '00' ? '' : `${textArr[0].slice(1)}h `
+        const minutes = `${textArr[1]}m `
+        const seconds = `${textArr[2]}s`
+
+        return hour + minutes + seconds
+    }
+
+    useEffect(() => {
+        if (id) {
+            const playAudio = async () => {
+                const audioEl = await itemRef.current.querySelector('audio')
+
+                if (audioEl) return audioEl.play()
+            }
+
+            playAudio()
+        }
+    }, [id])
 
     useEffect(() => {
         const getData = async () => {
@@ -34,18 +64,6 @@ const App = () => {
 
     if (error) return <p>{error}</p>
 
-    console.log(data)
-
-    const formatDuration = (text) => {
-        const textArr = text.split(':')
-
-        const hour = textArr[0] === '00' ? '' : `${textArr[0].slice(1)}h `
-        const minutes = `${textArr[1]}m `
-        const seconds = `${textArr[2]}s`
-
-        return hour + minutes + seconds
-    }
-
     return (
         <div className='container'>
             <header>
@@ -57,8 +75,8 @@ const App = () => {
                 <div className='description'>{data.description}</div>
             </header>
             <section className='feed'>
-                <div className='articles'>
-                    {data.items.map((item) => (
+                <div ref={itemRef} className='articles'>
+                    {data.items.slice(0, 10).map((item) => (
                         <article key={item.guid} className='article'>
                             <div className='title'>{item.title}</div>
                             <div className='date-duration'>
@@ -66,7 +84,15 @@ const App = () => {
                                 <div className='duration'>{formatDuration(item.itunes.duration)}</div>
                             </div>
                             <div className='snippet'>{item.itunes.summary}</div>
-                            <audio className='audio' src={item.enclosure.url} controls></audio>
+                            <div>
+                                {id === item.guid ? (
+                                    <audio className='audio' src={item.enclosure.url} controls></audio>
+                                ) : (
+                                    <button className='listen-btn' onClick={() => handleListen(item.guid)}>
+                                        Listen
+                                    </button>
+                                )}
+                            </div>
                         </article>
                     ))}
                 </div>
@@ -76,12 +102,3 @@ const App = () => {
 }
 
 export default App
-
-// title: 'Rep. Victoria Spartz was not invited to a bipartisan Congressional trip to the Ukrainian border. She
-// showed up anyway.',
-//       link: 'https://www.cnn.com/2022/08/05/politics/victoria-spartz-ukraine-republican-reaction/index.html',
-//       pubDate: 'Fri, 05 Aug 2022 14:59:00 GMT',
-//       content: '• Russia is ready to discuss prisoner swap with US after Griner conviction',
-//       contentSnippet: '• Russia is ready to discuss prisoner swap with US after Griner conviction',
-//       guid: 'https://www.cnn.com/2022/08/05/politics/victoria-spartz-ukraine-republican-reaction/index.html',
-//       isoDate: '2022-08-05T14:59:00.000Z'

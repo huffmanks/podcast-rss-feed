@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-const FEED_URL = import.meta.env.DEV ? import.meta.env.VITE_FEED_URL : process.env.FEED_URL
+const FEED_URL = 'https://podcast-rss-feed-api.netlify.app/.netlify/functions/api/feed'
 
 const App = () => {
     const itemRef = useRef()

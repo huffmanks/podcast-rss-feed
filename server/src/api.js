@@ -1,14 +1,24 @@
 const express = require('express')
 const serverless = require('serverless-http')
 const cors = require('cors')
+
+const { rateLimit } = require('express-rate-limit')
 const Parser = require('rss-parser')
 
 const parser = new Parser()
 
 const app = express()
 
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    standardHeaders: true,
+    legacyHeaders: false,
+})
+
 app.use(express.json())
 app.use(cors())
+app.use(limiter)
 
 const RSS_URL = 'https://feeds.simplecast.com/qm_9xx0g'
 
